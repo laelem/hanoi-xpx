@@ -1,0 +1,65 @@
+<function name="dbConnect">
+    <connect id="main" name="$CONFIG_DB_USERNAME$" pass="$CONFIG_DB_PASSWORD$" serveur="$CONFIG_DB_HOST$" base="$CONFIG_DB_NAME$"></connect>
+</function>
+
+<function name="dbDisconnect">
+    <connect close="main"></connect> 
+</function>
+
+<function name="generateDatabase">
+    <setarea name="sql" option="noparse">
+        CREATE TABLE `block_config` (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `number` smallint(1) unsigned NOT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+    </setarea>
+    <sql query="$sql$"></sql>
+
+    <setarea name="sql" option="noparse">
+        CREATE TABLE `move` (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `block_config_fk_id` int(11) unsigned NOT NULL,
+            `sequence_position` smallint(3) unsigned,
+            `block_index` smallint(1) unsigned NOT NULL,
+            `tower_index` smallint(1) unsigned NOT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+    </setarea>
+    <sql query="$sql$"></sql>
+</function>
+
+<function name="seedDatabase">
+    <set local="cpt" value="1">
+    <while expr="$cpt$ <= $CONFIG_MAX_NB_BLOCK$">
+        <sql query="INSERT INTO block_config (id, number) VALUES ($cpt$, $cpt$)"></sql>
+        <function exec="getHanoiMoves" block="$cpt$" start="1" end="3" inter="2" total="$cpt$" />
+        <set local="cpt" expr="$cpt$ + 1">
+    </while>
+</function>
+
+<function name="initDatabase">
+    <sql query="SHOW TABLES" option="enter">
+        <cond expr="$sqlrowcount$ = 0">
+            <function exec="generateDatabase" />
+            <function exec="seedDatabase" />
+        </cond>    
+    </sql>
+</function>
+
+<function name="getHanoiMoves" block="" start="" end="" inter="" total="">
+    <cond expr="$block$ != 0">
+        <set name="newBlock" expr="$block$ - 1" />
+        <function exec="getHanoiMoves" block="$newBlock$" start="$start$" end="$inter$" inter="$end$" total="$total$"/>
+
+        <setarea name="sql">
+            INSERT INTO move (block_config_fk_id, sequence_position, block_index, tower_index) VALUES
+            ($total$, (
+                SELECT COUNT(*) FROM move AS m2 WHERE m2.block_config_fk_id = $total$
+            ), $block$, $end$);
+        </setarea>
+        <sql query="$sql$"></sql>
+
+        <function exec="getHanoiMoves" block="$newBlock$" start="$inter$" end="$end$" inter="$start$" total="$total$" />
+    </cond>
+</function>

@@ -1,0 +1,5 @@
+<function exec="dbConnect" />
+
+<function exec="initDatabase" />
+
+<function exec="dbDisconnect" />

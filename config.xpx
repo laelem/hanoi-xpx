@@ -1,0 +1,7 @@
+<set name="CONFIG_INIT_NB_BLOCK" value="6" />
+<set name="CONFIG_MAX_NB_BLOCK" value="6" />
+
+<set name="CONFIG_DB_HOST" value="127.0.0.1" />
+<set name="CONFIG_DB_USERNAME" value="root" />
+<set name="CONFIG_DB_PASSWORD" value="password" />
+<set name="CONFIG_DB_NAME" value="hanoi" />

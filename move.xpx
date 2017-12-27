@@ -1,0 +1,22 @@
+<include file="config.xpx"></include>
+<include file="functions.xpx"></include>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <function exec="dbConnect" />
+        
+        <setarea name="sql">
+            SELECT block_index, tower_index 
+            FROM move m INNER JOIN block_config b ON m.block_config_fk_id = b.id 
+            WHERE b.number = $nbBlock$ AND m.sequence_position = $ind$ LIMIT 1
+        </setarea>
+        <sql query="$sql$">
+            <div>$block_index$|$tower_index$</div>
+        </sql>
+
+        <function exec="dbDisconnect" />
+    </body>
+</html>
